@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sorteio - Roleta de Prêmios</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sorteio Mensal - 35.000,00 - 11/09</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -11,6 +11,7 @@
     .container { max-width:1440px; margin:0 auto; padding:2rem; }
 
     .header { text-align:center; margin-bottom:3rem; padding:2rem 0; border-bottom:1px solid #2a2a2a; width:1440px; }
+
     .wheel-section { width:1440px; background:#1a1a1a; border-radius:12px; padding:2rem; margin-bottom:2rem; border:1px solid #2a2a2a; }
     .wheel-title { text-align:center; font-size:1.5rem; font-weight:600; margin-bottom:2rem; color:#fff; }
 
@@ -22,11 +23,6 @@
     .backdrop { z-index:0; filter:blur(5px) brightness(.5); position:absolute; width:200px; height:200px; background-size:contain; background-repeat:no-repeat; opacity:.2; }
     .wheel-item img { width:120px; height:120px; object-fit:cover; z-index:1; border-radius:8px; }
     .wheel-item h4 { font-size:.8rem; font-weight:600; text-align:center; color:#fff; z-index:1; }
-    .wheel-item-rate { font-size:.7rem; padding:.2rem .5rem; border-radius:4px; font-weight:700; text-transform:uppercase; z-index:1; }
-
-    .rate-easy { background:#2d5a2d; color:#90ee90; }
-    .rate-medium { background:#5a4d2d; color:#ffd700; }
-    .rate-hard { background:#5a2d2d; color:#ff6b6b; }
 
     .wheel-pointer { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:3px; height:80%; background:#fff; border-radius:2px; z-index:10; }
     .wheel-pointer::before, .wheel-pointer::after { content:''; position:absolute; left:50%; transform:translateX(-50%); width:0; height:0; }
@@ -38,23 +34,22 @@
     .draw-button { background:#333; color:#fff; border:none; padding:1rem 2rem; font-size:1rem; font-weight:700; border-radius:8px; cursor:pointer; transition:all .2s ease; font-family:inherit; }
     .draw-button:hover { background:#444; transform:translateY(-1px); }
 
-    .status-section { background:#1a1a1a; border-radius:12px; padding:2rem; border:1px solid #2a2a2a; }
+    .status-section { background:#1a1a1a; border-radius:12px; padding:2rem; border:1px solid #2a2a2a; width: 1440px; }
     .status-title { font-size:1.5rem; font-weight:600; margin-bottom:1.5rem; color:#fff; text-align:center; }
     .status-table { width:100%; border-collapse:collapse; }
     .status-table th { background:#222; padding:1rem; text-align:left; font-weight:700; color:#fff; border-bottom:1px solid #333; }
     .status-table td { padding:1rem; border-bottom:1px solid #2a2a2a; font-weight:400; }
+    .status-table tr:hover { background:#222; }
     .status-won { color:#90ee90; font-weight:700; }
     .status-available { color:#888; font-weight:400; }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">
-      <img src="banner.png" alt="">
-    </div>
+    <div class="header"><img src="banner.png" alt=""></div>
 
     <div class="wheel-section">
-      <h2 class="wheel-title">Roleta dos Prêmios</h2>
+      <h2 class="wheel-title">SORTEIO MENSAL CSGONET/INSANE 11/09 ★ AK FIRE SERPENT + 8 SKINS GAMMA + LUVA (R$35.000,00)</h2>
       <div class="wheel-container">
         <div class="wheel">
           <div class="wheel-items"></div>
@@ -63,12 +58,12 @@
       </div>
       <div class="result-section">
         <div class="result-display"></div>
-        <button class="draw-button" onclick="spinWheel()">Girar Roleta</button>
+        <button class="draw-button" onclick="spinWheel()">SORTEAR</button>
       </div>
     </div>
 
     <div class="status-section">
-      <h3 class="status-title">Status dos Itens</h3>
+      <h3 class="status-title">Itens do Sorteio</h3>
       <table class="status-table">
         <thead><tr><th>Item</th><th>Status</th></tr></thead>
         <tbody id="status-body"></tbody>
@@ -76,37 +71,96 @@
     </div>
   </div>
 
-  <!-- Som do tick -->
   <audio id="tick-sound" src="tick.mp3" preload="auto"></audio>
 
   <script>
-    const RATE_WEIGHTS = { easy: 60, medium: 30, hard: 10 };
+    const RATE_WEIGHTS = { easy: 75, medium: 20, hard: 5 };
+    
     const items = [
-      { name: "Ak Fire Serpent", image: "1.jpg", rate: "Hard", sorted: false },
-      { name: "★ Bayoneta Gamma Doppler", image: "2.jpg", rate: "Hard", sorted: false },
-      { name: "★ Falchion Gamma Doppler", image: "3.jpg", rate: "Hard", sorted: false },
-      { name: "★ Shaddow Daggers Gamma Doppler", image: "4.jpg", rate: "Hard", sorted: false },
-      { name: "★ Bowie Gamma Doppler", image: "5.jpg", rate: "Hard", sorted: false },
-      { name: "★ Overpting Wraps", image: "6.jpg", rate: "Hard", sorted: false },
-      { name: "★ Gut Knife Gamma Doppler", image: "7.jpg", rate: "Hard", sorted: false },
-      { name: "★ Huntsman Gamma Doppler", image: "8.jpg", rate: "Hard", sorted: false },
+      { name: "Ak Fire Serpent", image: "1.jpg", rate: "hard", sorted: false },
+      { name: "★ Bayoneta Gamma Doppler", image: "2.jpg", rate: "hard", sorted: false },
+      { name: "★ Falchion Gamma Doppler", image: "3.jpg", rate: "hard", sorted: false },
+      { name: "★ Shaddow Daggers Gamma Doppler", image: "4.jpg", rate: "hard", sorted: false },
+      { name: "★ Bowie Gamma Doppler", image: "5.jpg", rate: "hard", sorted: false },
+      { name: "★ Overpting Wraps", image: "6.jpg", rate: "hard", sorted: false },
+      { name: "★ Gut Knife Gamma Doppler", image: "7.jpg", rate: "hard", sorted: false },
+      { name: "★ Gut Knife Gamma Doppler", image: "7.jpg", rate: "hard", sorted: false },
+      { name: "★ Huntsman Gamma Doppler", image: "8.jpg", rate: "hard", sorted: false },
+      {name: "Glock Gamma Doppler", image: "9.jpg", rate: "hard", sorted: false},
     ];
+
+    const ITEM_WIDTH = 200;
 
     const wheelItemsContainer = document.querySelector('.wheel-items');
     const statusBody = document.querySelector('#status-body');
     const resultDisplay = document.querySelector('.result-display');
-    let isSpinning = false;
+    const wheelEl = document.querySelector('.wheel');
 
-    function rateClass(rate) {
-      const r = String(rate || '').toLowerCase();
-      if (r === 'easy') return 'rate-easy';
-      if (r === 'medium') return 'rate-medium';
-      return 'rate-hard';
+    let isSpinning = false;
+    let rafId = 0;
+
+    const TICK_POOL_SIZE = 8;
+    let tickPool = [];
+    let tickPtr = 0;
+    let audioPrimed = false;
+
+    function initTickPool() {
+      const base = document.getElementById('tick-sound');
+      if (!base) return;
+      const frag = document.createDocumentFragment();
+      for (let i = 0; i < TICK_POOL_SIZE; i++) {
+        const c = base.cloneNode();
+        c.removeAttribute('id');
+        c.style.display = 'none';
+        frag.appendChild(c);
+        tickPool.push(c);
+      }
+      document.body.appendChild(frag);
     }
-    function getWeight(rate) {
-      const r = String(rate || '').toLowerCase();
-      return RATE_WEIGHTS[r] ?? 1;
+
+    async function primeAudio() {
+      if (audioPrimed) return;
+      const base = document.getElementById('tick-sound');
+      if (!base) return;
+      try {
+        base.muted = true;
+        await base.play();
+        base.pause();
+        base.currentTime = 0;
+        base.muted = false;
+      } catch (_) {}
+      initTickPool();
+      audioPrimed = true;
     }
+
+    function playTick() {
+      if (!tickPool.length) return;
+      const a = tickPool[tickPtr];
+      try {
+        a.pause();
+        a.currentTime = 0;
+        a.play();
+      } catch (_) {}
+      tickPtr = (tickPtr + 1) % tickPool.length;
+    }
+
+    function getTranslateX(el) {
+      const style = getComputedStyle(el);
+      const t = style.transform || style.webkitTransform || 'none';
+      if (t === 'none') return 0;
+      const m3d = t.match(/matrix3d\(([^)]+)\)/);
+      if (m3d) {
+        const vals = m3d[1].split(',').map(parseFloat);
+        return vals[12] || 0;
+      }
+      const m2d = t.match(/matrix\(([^)]+)\)/);
+      if (m2d) {
+        const vals = m2d[1].split(',').map(parseFloat);
+        return vals[4] || 0;
+      }
+      return 0;
+    }
+
     function weightedPick(array, weightGetter) {
       const weights = array.map(weightGetter);
       const total = weights.reduce((a, b) => a + b, 0);
@@ -117,17 +171,25 @@
       }
       return array[array.length - 1];
     }
+
+    function getWeight(rate) {
+      const r = String(rate || '').toLowerCase();
+      return RATE_WEIGHTS[r] ?? 1;
+    }
+
     function renderStatus() {
       statusBody.innerHTML = '';
       items.forEach(it => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${it.name}</td>
+        tr.innerHTML = `
+          <td>${it.name}</td>
           <td class="${it.sorted ? 'status-won' : 'status-available'}">
             ${it.sorted ? 'Sorteado' : 'Não sorteado'}
           </td>`;
         statusBody.appendChild(tr);
       });
     }
+
     function renderWheel(list50) {
       wheelItemsContainer.innerHTML = '';
       list50.forEach(element => {
@@ -140,33 +202,55 @@
         wheelItemsContainer.appendChild(wheelItem);
       });
     }
+
     function resetWheelImmediate() {
       wheelItemsContainer.style.transition = 'none';
       wheelItemsContainer.style.transform = 'translateX(0px)';
-      void wheelItemsContainer.offsetWidth;
+      void wheelItemsContainer.offsetWidth; // reflow
     }
+
     function enableButton(enable) {
       const btn = document.querySelector('.draw-button');
       btn.disabled = !enable;
       btn.style.opacity = enable ? '1' : '0.6';
       btn.style.cursor = enable ? 'pointer' : 'not-allowed';
     }
-    function playTick() {
-      const audio = document.getElementById('tick-sound');
-      if (audio) {
-        const clone = audio.cloneNode();
-        clone.play();
-      }
+
+    function startTickSync() {
+      const pointerX = wheelEl.clientWidth / 2;
+      let lastIdx = null;
+
+      const step = () => {
+        const tx = getTranslateX(wheelItemsContainer);
+        const pos = (-tx + pointerX) / ITEM_WIDTH;
+        const idx = Math.floor(pos);
+        if (lastIdx === null) lastIdx = idx;
+        if (idx !== lastIdx) {
+          playTick();
+          lastIdx = idx;
+        }
+        rafId = requestAnimationFrame(step);
+      };
+      rafId = requestAnimationFrame(step);
     }
+
+    function stopTickSync() {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+
+    // Inicial
     renderStatus();
 
     async function spinWheel() {
       if (isSpinning) return;
       isSpinning = true;
       enableButton(false);
+      await primeAudio();
 
       const totalVisualItems = 50;
       const winningIndex = 40;
+
       const available = items.filter(i => !i.sorted);
       if (available.length <= 1) {
         alert("Todos os itens já foram sorteados (ou restou apenas um).");
@@ -174,7 +258,9 @@
         enableButton(true);
         return;
       }
+
       const winner = weightedPick(available, (it) => getWeight(it.rate));
+
       const list50 = [];
       for (let i = 0; i < totalVisualItems; i++) {
         if (i === winningIndex) list50.push(winner);
@@ -193,27 +279,18 @@
         requestAnimationFrame(() => {
           wheelItemsContainer.style.transition = `transform ${seconds}s cubic-bezier(0.08, 0.76, 0.14, 1)`;
           wheelItemsContainer.style.transform = `translateX(-${targetPx}px)`;
+          startTickSync();
         });
       });
-
-      // Tick sound sync
-      const itemWidth = 200;
-      const totalCards = Math.floor(targetPx / itemWidth);
-      const interval = (seconds * 1000) / totalCards;
-      let ticks = 0;
-      const tickInterval = setInterval(() => {
-        playTick();
-        ticks++;
-        if (ticks >= totalCards) clearInterval(tickInterval);
-      }, interval);
 
       resultDisplay.textContent = `Girando...`;
 
       const onEnd = () => {
         wheelItemsContainer.removeEventListener('transitionend', onEnd);
+        stopTickSync();
         winner.sorted = true;
         renderStatus();
-        resultDisplay.textContent = `🎉 Vencedor: ${winner.name} (${winner.rate})`;
+        resultDisplay.textContent = `Item sorteado: ${winner.name} (${winner.rate})`;
         wheelItemsContainer.style.transition = 'none';
         isSpinning = false;
         enableButton(true);
