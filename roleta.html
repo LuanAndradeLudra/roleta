@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorteio - Roleta de Prêmios</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Inter', sans-serif; background:#0f1419; color:#fff; line-height:1.6; }
+    .container { max-width:1440px; margin:0 auto; padding:2rem; }
+
+    .header { text-align:center; margin-bottom:3rem; padding:2rem 0; border-bottom:1px solid #2a2a2a; width:1440px; }
+    .header h1 { font-size:2.5rem; font-weight:700; color:#fff; margin-bottom:.5rem; }
+    .header p { font-size:1.1rem; color:#888; font-weight:400; }
+
+    .wheel-section { width:1440px; background:#1a1a1a; border-radius:12px; padding:2rem; margin-bottom:2rem; border:1px solid #2a2a2a; }
+    .wheel-title { text-align:center; font-size:1.5rem; font-weight:600; margin-bottom:2rem; color:#fff; }
+
+    .wheel-container { position:relative; margin-bottom:2rem; overflow:hidden; }
+    .wheel { height:200px; border:2px solid #333; border-radius:8px; overflow:hidden; position:relative; background:#111; }
+    .wheel-items { display:flex; height:100%; will-change:transform; }
+    .wheel-item { width:200px; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.5rem; padding:1rem; border-right:1px solid #2a2a2a; background:#1a1a1a; flex-shrink:0; position:relative; }
+    .wheel-item:nth-child(even){ background:#222; }
+    .backdrop { z-index:0; filter:blur(5px) brightness(.5); position:absolute; width:200px; height:200px; background-size:contain; background-repeat:no-repeat; opacity:.2; }
+    .wheel-item img { width:120px; height:120px; object-fit:cover; z-index:1; border-radius:8px; }
+    .wheel-item h4 { font-size:.8rem; font-weight:600; text-align:center; color:#fff; z-index:1; }
+    .wheel-item-rate { font-size:.7rem; padding:.2rem .5rem; border-radius:4px; font-weight:700; text-transform:uppercase; z-index:1; letter-spacing:.02em; }
+    .rate-easy { background:#2d5a2d; color:#90ee90; }
+    .rate-medium { background:#5a4d2d; color:#ffd700; }
+    .rate-hard { background:#5a2d2d; color:#ff6b6b; }
+
+    .wheel-pointer { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:3px; height:80%; background:#fff; border-radius:2px; z-index:10; }
+    .wheel-pointer::before, .wheel-pointer::after { content:''; position:absolute; left:50%; transform:translateX(-50%); width:0; height:0; }
+    .wheel-pointer::before { top:-8px; border-bottom:8px solid #fff; border-left:6px solid transparent; border-right:6px solid transparent; }
+    .wheel-pointer::after { bottom:-8px; border-top:8px solid #fff; border-left:6px solid transparent; border-right:6px solid transparent; }
+
+    .result-section { background:#1a1a1a; border-radius:12px; padding:2rem; text-align:center; margin-bottom:2rem; border:1px solid #2a2a2a; }
+    .result-display { font-size:1.2rem; font-weight:700; color:#fff; margin-bottom:1.5rem; min-height:60px; display:flex; align-items:center; justify-content:center; }
+    .draw-button { background:#333; color:#fff; border:none; padding:1rem 2rem; font-size:1rem; font-weight:700; border-radius:8px; cursor:pointer; transition:all .2s ease; font-family:inherit; }
+    .draw-button:hover { background:#444; transform:translateY(-1px); }
+
+    .status-section { background:#1a1a1a; border-radius:12px; padding:2rem; border:1px solid #2a2a2a; }
+    .status-title { font-size:1.5rem; font-weight:600; margin-bottom:1.5rem; color:#fff; text-align:center; }
+    .status-table { width:100%; border-collapse:collapse; }
+    .status-table th { background:#222; padding:1rem; text-align:left; font-weight:700; color:#fff; border-bottom:1px solid #333; }
+    .status-table td { padding:1rem; border-bottom:1px solid #2a2a2a; font-weight:400; }
+    .status-table tr:hover { background:#222; }
+    .status-won { color:#90ee90; font-weight:700; }
+    .status-available { color:#888; font-weight:400; }
+
+    @media (max-width:768px){
+      .container{ padding:1rem; }
+      .header h1{ font-size:2rem; }
+      .wheel-item{ width:160px; }
+      .wheel-item img{ width:60px; height:40px; }
+      .draw-button{ padding:.8rem 1.5rem; font-size:.9rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="banner.png" alt="">
+    </div>
+<audio id="tick-sound" src="tick.mp3" preload="auto"></audio>
+    <div class="wheel-section">
+      <h2 class="wheel-title">Roleta dos Prêmios</h2>
+
+      <div class="wheel-container">
+        <div class="wheel">
+          <div class="wheel-items"></div>
+          <!-- POINTER -->
+          <div class="wheel-pointer"></div>
+        </div>
+      </div>
+
+      <div class="result-section">
+        <div class="result-display"></div>
+        <button class="draw-button" onclick="spinWheel()">Girar Roleta</button>
+      </div>
+    </div>
+
+    <div class="status-section">
+      <h3 class="status-title">Status dos Itens</h3>
+      <table class="status-table">
+        <thead>
+          <tr><th>Item</th><th>Status</th></tr>
+        </thead>
+        <tbody id="status-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // --- Config de pesos (probabilidade por rate) ---
+    const RATE_WEIGHTS = { easy: 60, medium: 30, hard: 10 };
+
+    const items = [
+      { name: "Ak Fire Serpent", image: "1.jpg", rate: "Hard", sorted: false },
+      { name: "★ Bayoneta Gamma Doppler", image: "2.jpg", rate: "Hard", sorted: false },
+      { name: "★ Falchion Gamma Doppler", image: "3.jpg", rate: "Hard", sorted: false },
+      { name: "★ Shaddow Daggers Gamma Doppler", image: "4.jpg", rate: "Hard", sorted: false },
+      { name: "★ Bowie Gamma Doppler", image: "5.jpg", rate: "Hard", sorted: false },
+      { name: "★ Overpting Wraps", image: "6.jpg", rate: "Hard", sorted: false },
+      { name: "★ Gut Knife Gamma Doppler", image: "7.jpg", rate: "Hard", sorted: false },
+      { name: "★ Huntsman Gamma Doppler", image: "8.jpg", rate: "Hard", sorted: false },
+      // Acrescente mais itens aqui se quiser
+    ];
+
+    const wheelItemsContainer = document.querySelector('.wheel-items');
+    const statusBody = document.querySelector('#status-body');
+    const resultDisplay = document.querySelector('.result-display');
+
+    // --- Controle de giro/estado
+    let isSpinning = false;
+
+    // Mapeia rate -> classe CSS
+    function rateClass(rate) {
+      const r = String(rate || '').toLowerCase();
+      if (r === 'easy') return 'rate-easy';
+      if (r === 'medium') return 'rate-medium';
+      return 'rate-hard';
+    }
+
+    function getWeight(rate) {
+      const r = String(rate || '').toLowerCase();
+      return RATE_WEIGHTS[r] ?? 1;
+    }
+
+    function weightedPick(array, weightGetter) {
+      const weights = array.map(weightGetter);
+      const total = weights.reduce((a, b) => a + b, 0);
+      let rnd = Math.random() * total;
+      for (let i = 0; i < array.length; i++) {
+        rnd -= weights[i];
+        if (rnd <= 0) return array[i];
+      }
+      return array[array.length - 1];
+    }
+
+    function renderStatus() {
+      statusBody.innerHTML = '';
+      items.forEach(it => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${it.name}</td>
+          <td class="${it.sorted ? 'status-won' : 'status-available'}">
+            ${it.sorted ? 'Sorteado' : 'Não sorteado'}
+          </td>
+        `;
+        statusBody.appendChild(tr);
+      });
+    }
+
+    function renderWheel(list50) {
+      wheelItemsContainer.innerHTML = '';
+      list50.forEach(element => {
+        const wheelItem = document.createElement('div');
+        wheelItem.classList.add('wheel-item');
+        wheelItem.innerHTML = `
+          <div class="backdrop" style="background-image:url('${element.image}');"></div>
+          <img src="${element.image}" alt="${element.name}">
+          <h4>${element.name}</h4>
+        `;
+        wheelItemsContainer.appendChild(wheelItem);
+      });
+    }
+
+    // Reset visual imediato da roleta (antes de novo giro)
+    function resetWheelImmediate() {
+      wheelItemsContainer.style.transition = 'none';
+      wheelItemsContainer.style.transform = 'translateX(0px)';
+      // força reflow para consolidar o reset
+      void wheelItemsContainer.offsetWidth;
+    }
+
+    function enableButton(enable) {
+      const btn = document.querySelector('.draw-button');
+      btn.disabled = !enable;
+      btn.style.opacity = enable ? '1' : '0.6';
+      btn.style.cursor = enable ? 'pointer' : 'not-allowed';
+    }
+
+    // Preenche status inicial
+    renderStatus();
+
+    async function spinWheel() {
+      if (isSpinning) return;          // evita double-click
+      isSpinning = true;
+      enableButton(false);
+
+      const totalVisualItems = 50;
+      const winningIndex = 40; // posição solicitada
+
+      const available = items.filter(i => !i.sorted);
+      if (available.length <= 1) {
+        alert("Todos os itens já foram sorteados (ou restou apenas um).");
+        isSpinning = false;
+        enableButton(true);
+        return;
+      }
+
+      // 1) Escolher vencedor com pesos por rate (NÃO marcar sorted ainda!)
+      const winner = weightedPick(available, (it) => getWeight(it.rate));
+
+      // 2) Montar a lista de 50 a partir de *available* (inclui winner), e injetar o winner na posição 40.
+      const list50 = [];
+      for (let i = 0; i < totalVisualItems; i++) {
+        if (i === winningIndex) {
+          list50.push(winner);
+        } else {
+          const pick = available[Math.floor(Math.random() * available.length)];
+          list50.push(pick);
+        }
+      }
+
+      // 3) Resetar roleta (zera transform/transition) ANTES de renderizar
+      resetWheelImmediate();
+
+      // 4) Renderizar roleta
+      renderWheel(list50);
+
+      // 5) Animar (mantendo seu range aleatório atual)
+      const init = 7320;
+      const final = 7505;
+      const targetPx = Math.random() < 0.5 ? init : final;
+      const seconds = Math.floor(Math.random() * (18 - 14 + 1) + 14);
+
+      // Aplica a transição num frame separado para garantir que o reset "pegou"
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          wheelItemsContainer.style.transition = `transform ${seconds}s cubic-bezier(0.08, 0.76, 0.14, 1)`;
+          wheelItemsContainer.style.transform = `translateX(-${targetPx}px)`;
+        });
+      });
+
+      // 6) Mostrar resultado (status só muda no final da animação)
+      setTimeout(() => {
+        resultDisplay.textContent = `Item sorteado: ${winner.name} (${winner.rate})`;
+      }, seconds * 1000);
+
+      // 7) Ao terminar a transição, marcar vencedor como sorteado e atualizar status
+      const onEnd = () => {
+        wheelItemsContainer.removeEventListener('transitionend', onEnd);
+        // Agora sim: marca como sorteado
+        winner.sorted = true;
+        renderStatus();
+
+        // opcional: remover a transição para futuros resets
+        wheelItemsContainer.style.transition = 'none';
+        isSpinning = false;
+        enableButton(true);
+      };
+      wheelItemsContainer.addEventListener('transitionend', onEnd);
+    }
+  </script>
+</body>
+</html>
