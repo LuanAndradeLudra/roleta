@@ -1,305 +1,564 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sorteio Mensal - 35.000,00 - 11/09</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Inter', sans-serif; background:#0f1419; color:#fff; line-height:1.6; }
-    .container { max-width:1440px; margin:0 auto; padding:2rem; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sorteio Mensal - 35.000,00 - 11/09</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #0f1419;
+        color: #fff;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
 
-    .header { text-align:center; margin-bottom:3rem; padding:2rem 0; border-bottom:1px solid #2a2a2a; width:1440px; }
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem 0;
+        border-bottom: 1px solid #2a2a2a;
+        width: 1440px;
+      }
 
-    .wheel-section { width:1440px; background:#1a1a1a; border-radius:12px; padding:2rem; margin-bottom:2rem; border:1px solid #2a2a2a; }
-    .wheel-title { text-align:center; font-size:1.5rem; font-weight:600; margin-bottom:2rem; color:#fff; }
+      .wheel-section {
+        width: 1440px;
+        background: #1a1a1a;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid #2a2a2a;
+      }
+      .wheel-title {
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        color: #fff;
+      }
 
-    .wheel-container { position:relative; margin-bottom:2rem; overflow:hidden; }
-    .wheel { height:200px; border:2px solid #333; border-radius:8px; overflow:hidden; position:relative; background:#111; }
-    .wheel-items { display:flex; height:100%; will-change:transform; }
-    .wheel-item { width:200px; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:start; gap:.5rem; padding:1rem; border-right:1px solid #2a2a2a; background:#1a1a1a; flex-shrink:0; position:relative; }
-    .wheel-item:nth-child(even){ background:#222; }
-    .backdrop { z-index:0; filter:blur(5px) brightness(.5); position:absolute; width:200px; height:200px; background-size:contain; background-repeat:no-repeat; opacity:.2; }
-    .wheel-item img { width:120px; height:120px; object-fit:cover; z-index:1; border-radius:8px; }
-    .wheel-item h4 { font-size:.8rem; font-weight:600; text-align:center; color:#fff; z-index:1; }
+      .wheel-container {
+        position: relative;
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .wheel {
+        height: 200px;
+        border: 2px solid #333;
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
+        background: #111;
+      }
+      .wheel-items {
+        display: flex;
+        height: 100%;
+        will-change: transform;
+      }
+      .wheel-item {
+        width: 200px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: start;
+        gap: 0.5rem;
+        padding: 1rem;
+        border-right: 1px solid #2a2a2a;
+        background: #1a1a1a;
+        flex-shrink: 0;
+        position: relative;
+      }
+      .wheel-item:nth-child(even) {
+        background: #222;
+      }
+      .backdrop {
+        z-index: 0;
+        filter: blur(5px) brightness(0.5);
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        opacity: 0.2;
+      }
+      .wheel-item img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        z-index: 1;
+        border-radius: 8px;
+      }
+      .wheel-item h4 {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+        color: #fff;
+        z-index: 1;
+      }
 
-    .wheel-pointer { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:3px; height:80%; background:#fff; border-radius:2px; z-index:10; }
-    .wheel-pointer::before, .wheel-pointer::after { content:''; position:absolute; left:50%; transform:translateX(-50%); width:0; height:0; }
-    .wheel-pointer::before { top:-8px; border-bottom:8px solid #fff; border-left:6px solid transparent; border-right:6px solid transparent; }
-    .wheel-pointer::after { bottom:-8px; border-top:8px solid #fff; border-left:6px solid transparent; border-right:6px solid transparent; }
+      .wheel-pointer {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 3px;
+        height: 80%;
+        background: #fff;
+        border-radius: 2px;
+        z-index: 10;
+      }
+      .wheel-pointer::before,
+      .wheel-pointer::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+      }
+      .wheel-pointer::before {
+        top: -8px;
+        border-bottom: 8px solid #fff;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+      }
+      .wheel-pointer::after {
+        bottom: -8px;
+        border-top: 8px solid #fff;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+      }
 
-    .result-section { background:#1a1a1a; border-radius:12px; padding:2rem; text-align:center; margin-bottom:2rem; border:1px solid #2a2a2a; }
-    .result-display { font-size:1.2rem; font-weight:700; color:#fff; margin-bottom:1.5rem; min-height:60px; display:flex; align-items:center; justify-content:center; }
-    .draw-button { background:#333; color:#fff; border:none; padding:1rem 2rem; font-size:1rem; font-weight:700; border-radius:8px; cursor:pointer; transition:all .2s ease; font-family:inherit; }
-    .draw-button:hover { background:#444; transform:translateY(-1px); }
+      .result-section {
+        background: #1a1a1a;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        border: 1px solid #2a2a2a;
+      }
+      .result-display {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 1.5rem;
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .draw-button {
+        background: #333;
+        color: #fff;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 700;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: inherit;
+      }
+      .draw-button:hover {
+        background: #444;
+        transform: translateY(-1px);
+      }
 
-    .status-section { background:#1a1a1a; border-radius:12px; padding:2rem; border:1px solid #2a2a2a; width: 1440px; }
-    .status-title { font-size:1.5rem; font-weight:600; margin-bottom:1.5rem; color:#fff; text-align:center; }
-    .status-table { width:100%; border-collapse:collapse; }
-    .status-table th { background:#222; padding:1rem; text-align:left; font-weight:700; color:#fff; border-bottom:1px solid #333; }
-    .status-table td { padding:1rem; border-bottom:1px solid #2a2a2a; font-weight:400; }
-    .status-table tr:hover { background:#222; }
-    .status-won { color:#90ee90; font-weight:700; }
-    .status-available { color:#888; font-weight:400; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header"><img src="banner.png" alt="" style="width: 100%;"></div>
+      .status-section {
+        background: #1a1a1a;
+        border-radius: 12px;
+        padding: 2rem;
+        border: 1px solid #2a2a2a;
+        width: 1440px;
+      }
+      .status-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: #fff;
+        text-align: center;
+      }
+      .status-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .status-table th {
+        background: #222;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 700;
+        color: #fff;
+        border-bottom: 1px solid #333;
+      }
+      .status-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #2a2a2a;
+        font-weight: 400;
+      }
+      .status-table tr:hover {
+        background: #222;
+      }
+      .status-won {
+        color: #90ee90;
+        font-weight: 700;
+      }
+      .status-available {
+        color: #888;
+        font-weight: 400;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="banner.png" alt="" style="width: 100%" />
+      </div>
 
-    <div class="wheel-section">
-      <h2 class="wheel-title">SORTEIO MENSAL CSGONET/INSANE 11/11 ★ AWP HYDRA + 10 FACAS TIGER TOOTH + GLOVES OMEGA E AK (R$45.000,00)</h2>
-      <div class="wheel-container">
-        <div class="wheel">
-          <div class="wheel-items"></div>
-          <div class="wheel-pointer"></div>
+      <div class="wheel-section">
+        <h2 class="wheel-title">
+          SORTEIO MENSAL CSGONET/INSANE 11/12 ★ 13 FACAS CRIMSON WEB + AWP THE
+          PRINCE (R$45.000,00)
+        </h2>
+        <div class="wheel-container">
+          <div class="wheel">
+            <div class="wheel-items"></div>
+            <div class="wheel-pointer"></div>
+          </div>
+        </div>
+        <div class="result-section">
+          <div class="result-display"></div>
+          <button class="draw-button" onclick="spinWheel()">SORTEAR</button>
         </div>
       </div>
-      <div class="result-section">
-        <div class="result-display"></div>
-        <button class="draw-button" onclick="spinWheel()">SORTEAR</button>
+
+      <div class="status-section">
+        <h3 class="status-title">Itens do Sorteio</h3>
+        <table class="status-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="status-body"></tbody>
+        </table>
       </div>
     </div>
 
-    <div class="status-section">
-      <h3 class="status-title">Itens do Sorteio</h3>
-      <table class="status-table">
-        <thead><tr><th>Item</th><th>Status</th></tr></thead>
-        <tbody id="status-body"></tbody>
-      </table>
-    </div>
-  </div>
+    <audio id="tick-sound" src="tick.mp3" preload="auto"></audio>
 
-  <audio id="tick-sound" src="tick.mp3" preload="auto"></audio>
+    <script>
+      const RATE_WEIGHTS = { easy: 75, medium: 20, hard: 5 };
 
-  <script>
-    const RATE_WEIGHTS = { easy: 75, medium: 20, hard: 5 };
-    
-    const items = [
-      { name: "★ AWP DESERT HYDRA", image: "12.jpg", rate: "easy", sorted: false },
-      { name: "★ M9 TIGER TOOTH", image: "5.jpg", rate: "easy", sorted: false },
-      { name: "★ SKELETON TIGER TOOTH", image: "2.jpg", rate: "easy", sorted: false },
-      { name: "★ NOMAD TIGER TOOTH", image: "1.jpg", rate: "easy", sorted: false },
-      { name: "★ URSUS TIGER TOOTH", image: "4.jpg", rate: "easy", sorted: false },
-      { name: "★ PARACORD TIGER TOOTH", image: "10.jpg", rate: "easy", sorted: false },
-      { name: "★ SURVIVAL TIGER TOOTH", image: "14.jpg", rate: "easy", sorted: false },
-      { name: "★ FALCHION TIGER TOOTH", image: "3.jpg", rate: "easy", sorted: false },
-      { name: "★ GUT TIGER TOOTH", image: "7.jpg", rate: "easy", sorted: false },
-      { name: "★ NAVAJA TIGER TOOTH", image: "9.jpg", rate: "easy", sorted: false },
-      { name: "★ SHADOW TIGER TOOTH", image: "8.jpg", rate: "easy", sorted: false },
-      { name: "★ GLOVES OMEGA", image: "6.jpg", rate: "easy", sorted: false },
-      { name: "★ AK-47 FUEL INJECTOR", image: "11.jpg", rate: "easy", sorted: false },
-    ];
+      const items = [
+        {
+          name: "★ AWP THE PRINCE",
+          image: "1.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ BUTTERFLY CRIMSON WEB",
+          image: "9.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ KARAMBIT CRIMSON WEB",
+          image: "13.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ M9 CRIMSON WEB",
+          image: "10.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ SKELETON CRIMSON WEB",
+          image: "7.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ URSUS CRIMSON WEB",
+          image: "6.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ KUKRI CRIMSON WEB",
+          image: "14.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ PARACORD CRIMSON WEB",
+          image: "12.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ BOWIE CRIMSON WEB",
+          image: "4.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ SURVIVAL CRIMSON WEB",
+          image: "11.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ GUT CRIMSON WEB",
+          image: "8.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ FALCHION CRIMSON WEB",
+          image: "5.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ NAVAJA CRIMSON WEB",
+          image: "2.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ SHADOW CRIMSON WEB",
+          image: "3.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+      ];
 
-    const ITEM_WIDTH = 200;
+      const ITEM_WIDTH = 200;
 
-    const wheelItemsContainer = document.querySelector('.wheel-items');
-    const statusBody = document.querySelector('#status-body');
-    const resultDisplay = document.querySelector('.result-display');
-    const wheelEl = document.querySelector('.wheel');
+      const wheelItemsContainer = document.querySelector(".wheel-items");
+      const statusBody = document.querySelector("#status-body");
+      const resultDisplay = document.querySelector(".result-display");
+      const wheelEl = document.querySelector(".wheel");
 
-    let isSpinning = false;
-    let rafId = 0;
+      let isSpinning = false;
+      let rafId = 0;
 
-    const TICK_POOL_SIZE = 8;
-    let tickPool = [];
-    let tickPtr = 0;
-    let audioPrimed = false;
+      const TICK_POOL_SIZE = 8;
+      let tickPool = [];
+      let tickPtr = 0;
+      let audioPrimed = false;
 
-    function initTickPool() {
-      const base = document.getElementById('tick-sound');
-      if (!base) return;
-      const frag = document.createDocumentFragment();
-      for (let i = 0; i < TICK_POOL_SIZE; i++) {
-        const c = base.cloneNode();
-        c.removeAttribute('id');
-        c.style.display = 'none';
-        frag.appendChild(c);
-        tickPool.push(c);
+      function initTickPool() {
+        const base = document.getElementById("tick-sound");
+        if (!base) return;
+        const frag = document.createDocumentFragment();
+        for (let i = 0; i < TICK_POOL_SIZE; i++) {
+          const c = base.cloneNode();
+          c.removeAttribute("id");
+          c.style.display = "none";
+          frag.appendChild(c);
+          tickPool.push(c);
+        }
+        document.body.appendChild(frag);
       }
-      document.body.appendChild(frag);
-    }
 
-    async function primeAudio() {
-      if (audioPrimed) return;
-      const base = document.getElementById('tick-sound');
-      if (!base) return;
-      try {
-        base.muted = true;
-        await base.play();
-        base.pause();
-        base.currentTime = 0;
-        base.muted = false;
-      } catch (_) {}
-      initTickPool();
-      audioPrimed = true;
-    }
-
-    function playTick() {
-      if (!tickPool.length) return;
-      const a = tickPool[tickPtr];
-      try {
-        a.pause();
-        a.currentTime = 0;
-        a.play();
-      } catch (_) {}
-      tickPtr = (tickPtr + 1) % tickPool.length;
-    }
-
-    function getTranslateX(el) {
-      const style = getComputedStyle(el);
-      const t = style.transform || style.webkitTransform || 'none';
-      if (t === 'none') return 0;
-      const m3d = t.match(/matrix3d\(([^)]+)\)/);
-      if (m3d) {
-        const vals = m3d[1].split(',').map(parseFloat);
-        return vals[12] || 0;
+      async function primeAudio() {
+        if (audioPrimed) return;
+        const base = document.getElementById("tick-sound");
+        if (!base) return;
+        try {
+          base.muted = true;
+          await base.play();
+          base.pause();
+          base.currentTime = 0;
+          base.muted = false;
+        } catch (_) {}
+        initTickPool();
+        audioPrimed = true;
       }
-      const m2d = t.match(/matrix\(([^)]+)\)/);
-      if (m2d) {
-        const vals = m2d[1].split(',').map(parseFloat);
-        return vals[4] || 0;
+
+      function playTick() {
+        if (!tickPool.length) return;
+        const a = tickPool[tickPtr];
+        try {
+          a.pause();
+          a.currentTime = 0;
+          a.play();
+        } catch (_) {}
+        tickPtr = (tickPtr + 1) % tickPool.length;
       }
-      return 0;
-    }
 
-    function weightedPick(array, weightGetter) {
-      const weights = array.map(weightGetter);
-      const total = weights.reduce((a, b) => a + b, 0);
-      let rnd = Math.random() * total;
-      for (let i = 0; i < array.length; i++) {
-        rnd -= weights[i];
-        if (rnd <= 0) return array[i];
+      function getTranslateX(el) {
+        const style = getComputedStyle(el);
+        const t = style.transform || style.webkitTransform || "none";
+        if (t === "none") return 0;
+        const m3d = t.match(/matrix3d\(([^)]+)\)/);
+        if (m3d) {
+          const vals = m3d[1].split(",").map(parseFloat);
+          return vals[12] || 0;
+        }
+        const m2d = t.match(/matrix\(([^)]+)\)/);
+        if (m2d) {
+          const vals = m2d[1].split(",").map(parseFloat);
+          return vals[4] || 0;
+        }
+        return 0;
       }
-      return array[array.length - 1];
-    }
 
-    function getWeight(rate) {
-      const r = String(rate || '').toLowerCase();
-      return RATE_WEIGHTS[r] ?? 1;
-    }
+      function weightedPick(array, weightGetter) {
+        const weights = array.map(weightGetter);
+        const total = weights.reduce((a, b) => a + b, 0);
+        let rnd = Math.random() * total;
+        for (let i = 0; i < array.length; i++) {
+          rnd -= weights[i];
+          if (rnd <= 0) return array[i];
+        }
+        return array[array.length - 1];
+      }
 
-    function renderStatus() {
-      statusBody.innerHTML = '';
-      items.forEach(it => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
+      function getWeight(rate) {
+        const r = String(rate || "").toLowerCase();
+        return RATE_WEIGHTS[r] ?? 1;
+      }
+
+      function renderStatus() {
+        statusBody.innerHTML = "";
+        items.forEach((it) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
           <td>${it.name}</td>
-          <td class="${it.sorted ? 'status-won' : 'status-available'}">
-            ${it.sorted ? 'Sorteado' : 'Não sorteado'}
+          <td class="${it.sorted ? "status-won" : "status-available"}">
+            ${it.sorted ? "Sorteado" : "Não sorteado"}
           </td>`;
-        statusBody.appendChild(tr);
-      });
-    }
+          statusBody.appendChild(tr);
+        });
+      }
 
-    function renderWheel(list50) {
-      wheelItemsContainer.innerHTML = '';
-      list50.forEach(element => {
-        const wheelItem = document.createElement('div');
-        wheelItem.classList.add('wheel-item');
-        wheelItem.innerHTML = `
+      function renderWheel(list50) {
+        wheelItemsContainer.innerHTML = "";
+        list50.forEach((element) => {
+          const wheelItem = document.createElement("div");
+          wheelItem.classList.add("wheel-item");
+          wheelItem.innerHTML = `
           <div class="backdrop" style="background-image:url('${element.image}');"></div>
           <img src="${element.image}" alt="${element.name}">
           <h4>${element.name}</h4>`;
-        wheelItemsContainer.appendChild(wheelItem);
-      });
-    }
-
-    function resetWheelImmediate() {
-      wheelItemsContainer.style.transition = 'none';
-      wheelItemsContainer.style.transform = 'translateX(0px)';
-      void wheelItemsContainer.offsetWidth; // reflow
-    }
-
-    function enableButton(enable) {
-      const btn = document.querySelector('.draw-button');
-      btn.disabled = !enable;
-      btn.style.opacity = enable ? '1' : '0.6';
-      btn.style.cursor = enable ? 'pointer' : 'not-allowed';
-    }
-
-    function startTickSync() {
-      const pointerX = wheelEl.clientWidth / 2;
-      let lastIdx = null;
-
-      const step = () => {
-        const tx = getTranslateX(wheelItemsContainer);
-        const pos = (-tx + pointerX) / ITEM_WIDTH;
-        const idx = Math.floor(pos);
-        if (lastIdx === null) lastIdx = idx;
-        if (idx !== lastIdx) {
-          playTick();
-          lastIdx = idx;
-        }
-        rafId = requestAnimationFrame(step);
-      };
-      rafId = requestAnimationFrame(step);
-    }
-
-    function stopTickSync() {
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = 0;
-    }
-
-    // Inicial
-    renderStatus();
-
-    async function spinWheel() {
-      if (isSpinning) return;
-      isSpinning = true;
-      enableButton(false);
-      await primeAudio();
-
-      const totalVisualItems = 50;
-      const winningIndex = 40;
-
-      const available = items.filter(i => !i.sorted);
-      if (available.length <= 1) {
-        alert("Todos os itens já foram sorteados (ou restou apenas um).");
-        isSpinning = false;
-        enableButton(true);
-        return;
-      }
-
-      const winner = weightedPick(available, (it) => getWeight(it.rate));
-
-      const list50 = [];
-      for (let i = 0; i < totalVisualItems; i++) {
-        if (i === winningIndex) list50.push(winner);
-        else list50.push(available[Math.floor(Math.random() * available.length)]);
-      }
-
-      resetWheelImmediate();
-      renderWheel(list50);
-
-      const init = 7320;
-      const final = 7505;
-      const targetPx = Math.random() < 0.5 ? init : final;
-      const seconds = Math.floor(Math.random() * (18 - 14 + 1) + 14);
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          wheelItemsContainer.style.transition = `transform ${seconds}s cubic-bezier(0.08, 0.76, 0.14, 1)`;
-          wheelItemsContainer.style.transform = `translateX(-${targetPx}px)`;
-          startTickSync();
+          wheelItemsContainer.appendChild(wheelItem);
         });
-      });
+      }
 
-      resultDisplay.textContent = `Girando...`;
+      function resetWheelImmediate() {
+        wheelItemsContainer.style.transition = "none";
+        wheelItemsContainer.style.transform = "translateX(0px)";
+        void wheelItemsContainer.offsetWidth; // reflow
+      }
 
-      const onEnd = () => {
-        wheelItemsContainer.removeEventListener('transitionend', onEnd);
-        stopTickSync();
-        winner.sorted = true;
-        renderStatus();
-        resultDisplay.textContent = `Item sorteado: ${winner.name}`;
-        wheelItemsContainer.style.transition = 'none';
-        isSpinning = false;
-        enableButton(true);
-      };
-      wheelItemsContainer.addEventListener('transitionend', onEnd);
-    }
-  </script>
-</body>
+      function enableButton(enable) {
+        const btn = document.querySelector(".draw-button");
+        btn.disabled = !enable;
+        btn.style.opacity = enable ? "1" : "0.6";
+        btn.style.cursor = enable ? "pointer" : "not-allowed";
+      }
+
+      function startTickSync() {
+        const pointerX = wheelEl.clientWidth / 2;
+        let lastIdx = null;
+
+        const step = () => {
+          const tx = getTranslateX(wheelItemsContainer);
+          const pos = (-tx + pointerX) / ITEM_WIDTH;
+          const idx = Math.floor(pos);
+          if (lastIdx === null) lastIdx = idx;
+          if (idx !== lastIdx) {
+            playTick();
+            lastIdx = idx;
+          }
+          rafId = requestAnimationFrame(step);
+        };
+        rafId = requestAnimationFrame(step);
+      }
+
+      function stopTickSync() {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+
+      // Inicial
+      renderStatus();
+
+      async function spinWheel() {
+        if (isSpinning) return;
+        isSpinning = true;
+        enableButton(false);
+        await primeAudio();
+
+        const totalVisualItems = 50;
+        const winningIndex = 40;
+
+        const available = items.filter((i) => !i.sorted);
+        if (available.length <= 1) {
+          alert("Todos os itens já foram sorteados (ou restou apenas um).");
+          isSpinning = false;
+          enableButton(true);
+          return;
+        }
+
+        const winner = weightedPick(available, (it) => getWeight(it.rate));
+
+        const list50 = [];
+        for (let i = 0; i < totalVisualItems; i++) {
+          if (i === winningIndex) list50.push(winner);
+          else
+            list50.push(
+              available[Math.floor(Math.random() * available.length)]
+            );
+        }
+
+        resetWheelImmediate();
+        renderWheel(list50);
+
+        const init = 7320;
+        const final = 7505;
+        const targetPx = Math.random() < 0.5 ? init : final;
+        const seconds = Math.floor(Math.random() * (18 - 14 + 1) + 14);
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            wheelItemsContainer.style.transition = `transform ${seconds}s cubic-bezier(0.08, 0.76, 0.14, 1)`;
+            wheelItemsContainer.style.transform = `translateX(-${targetPx}px)`;
+            startTickSync();
+          });
+        });
+
+        resultDisplay.textContent = `Girando...`;
+
+        const onEnd = () => {
+          wheelItemsContainer.removeEventListener("transitionend", onEnd);
+          stopTickSync();
+          winner.sorted = true;
+          renderStatus();
+          resultDisplay.textContent = `Item sorteado: ${winner.name}`;
+          wheelItemsContainer.style.transition = "none";
+          isSpinning = false;
+          enableButton(true);
+        };
+        wheelItemsContainer.addEventListener("transitionend", onEnd);
+      }
+    </script>
+  </body>
 </html>
