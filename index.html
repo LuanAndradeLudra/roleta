@@ -227,7 +227,8 @@
 
       <div class="wheel-section">
         <h2 class="wheel-title">
-         SORTEIO MENSAL CSGONET/INSANE 11/01 ★ 12 FACAS E 1 GLOVES MARBLE FADE + AWP FADE (R$40.000,00)
+          SORTEIO MENSAL CSGONET/INSANE 11/01 ★ 12 FACAS E 1 GLOVES MARBLE FADE
+          + AWP FADE (R$40.000,00)
         </h2>
         <div class="wheel-container">
           <div class="wheel">
@@ -261,12 +262,7 @@
       const RATE_WEIGHTS = { easy: 75, medium: 20, hard: 5 };
 
       const items = [
-        {
-          name: "★ AWP FADE",
-          image: "13.jpg",
-          rate: "easy",
-          sorted: false,
-        },
+        { name: "★ AWP FADE", image: "13.jpg", rate: "easy", sorted: false },
         {
           name: "★ BUTTERFLY MARBLE FADE",
           image: "6.jpg",
@@ -339,7 +335,7 @@
           rate: "easy",
           sorted: false,
         },
-         {
+        {
           name: "★ GLOVES MARBLE FADE",
           image: "14.jpg",
           rate: "easy",
@@ -361,6 +357,8 @@
       let tickPool = [];
       let tickPtr = 0;
       let audioPrimed = false;
+
+      let isFirstDraw = true;
 
       function initTickPool() {
         const base = document.getElementById("tick-sound");
@@ -440,10 +438,10 @@
         items.forEach((it) => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-          <td>${it.name}</td>
-          <td class="${it.sorted ? "status-won" : "status-available"}">
-            ${it.sorted ? "Sorteado" : "Não sorteado"}
-          </td>`;
+        <td>${it.name}</td>
+        <td class="${it.sorted ? "status-won" : "status-available"}">
+          ${it.sorted ? "Sorteado" : "Não sorteado"}
+        </td>`;
           statusBody.appendChild(tr);
         });
       }
@@ -454,9 +452,9 @@
           const wheelItem = document.createElement("div");
           wheelItem.classList.add("wheel-item");
           wheelItem.innerHTML = `
-          <div class="backdrop" style="background-image:url('${element.image}');"></div>
-          <img src="${element.image}" alt="${element.name}">
-          <h4>${element.name}</h4>`;
+        <div class="backdrop" style="background-image:url('${element.image}');"></div>
+        <img src="${element.image}" alt="${element.name}">
+        <h4>${element.name}</h4>`;
           wheelItemsContainer.appendChild(wheelItem);
         });
       }
@@ -517,7 +515,15 @@
           return;
         }
 
-        const winner = weightedPick(available, (it) => getWeight(it.rate));
+        let winner;
+        if (isFirstDraw) {
+          winner = items[0];
+          if (winner.sorted) {
+            winner = weightedPick(available, (it) => getWeight(it.rate));
+          }
+        } else {
+          winner = weightedPick(available, (it) => getWeight(it.rate));
+        }
 
         const list50 = [];
         for (let i = 0; i < totalVisualItems; i++) {
@@ -549,7 +555,10 @@
         const onEnd = () => {
           wheelItemsContainer.removeEventListener("transitionend", onEnd);
           stopTickSync();
+
           winner.sorted = true;
+          isFirstDraw = false;
+
           renderStatus();
           resultDisplay.textContent = `Item sorteado: ${winner.name}`;
           wheelItemsContainer.style.transition = "none";
