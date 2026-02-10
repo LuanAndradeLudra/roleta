@@ -227,8 +227,7 @@
 
       <div class="wheel-section">
         <h2 class="wheel-title">
-          SORTEIO MENSAL CSGONET/INSANE 11/12 ★ 13 FACAS CRIMSON WEB + AWP THE
-          PRINCE (R$45.000,00)
+          SORTEIO MENSAL CSGONET 12/02 ★ PANDORA GLOVES + 20 FACAS FREEHAND (R$70.000,00)
         </h2>
         <div class="wheel-container">
           <div class="wheel">
@@ -263,86 +262,128 @@
 
       const items = [
         {
-          name: "★ AWP THE PRINCE",
-          image: "1.jpg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ BUTTERFLY CRIMSON WEB",
-          image: "9.jpg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ KARAMBIT CRIMSON WEB",
-          image: "13.jpg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ M9 CRIMSON WEB",
-          image: "10.jpg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ SKELETON CRIMSON WEB",
-          image: "7.jpg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ URSUS CRIMSON WEB",
-          image: "6.jpg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ KUKRI CRIMSON WEB",
-          image: "14.jpg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ PARACORD CRIMSON WEB",
-          image: "12.jpg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ BOWIE CRIMSON WEB",
-          image: "4.jpg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ SURVIVAL CRIMSON WEB",
+          name: "★ PANDORA GLOVES",
           image: "11.jpg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ GUT CRIMSON WEB",
-          image: "8.jpg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ FALCHION CRIMSON WEB",
-          image: "5.jpg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ NAVAJA CRIMSON WEB",
+          name: "★ BUTTERFLY FREEHAND",
           image: "2.jpg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ SHADOW CRIMSON WEB",
+          name: "★ KARAMBIT FREEHAND",
+          image: "8.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ M9 FREEHAND",
+          image: "7.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ BAYONET FREEHAND",
+          image: "6.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ BAYONET FREEHAND",
+          image: "6.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ FLIP FREEHAND",
+          image: "10.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ FLIP FREEHAND",
+          image: "10.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ HUNTSMAN FREEHAND",
+          image: "5.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ HUNTSMAN FREEHAND",
+          image: "5.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ BOWIE FREEHAND",
+          image: "4.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ BOWIE FREEHAND",
+          image: "4.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ FALCHION FREEHAND",
+          image: "1.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ FALCHION FREEHAND",
+          image: "1.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ FALCHION FREEHAND",
+          image: "1.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ SHADOW FREEHAND",
           image: "3.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ SHADOW FREEHAND",
+          image: "3.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ SHADOW FREEHAND",
+          image: "3.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ GUT FREEHAND",
+          image: "9.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ GUT FREEHAND",
+          image: "9.jpg",
+          rate: "easy",
+          sorted: false,
+        },
+        {
+          name: "★ GUT FREEHAND",
+          image: "9.jpg",
           rate: "easy",
           sorted: false,
         },
@@ -518,7 +559,9 @@
           return;
         }
 
-        const winner = weightedPick(available, (it) => getWeight(it.rate));
+        // Se é o primeiro sorteio, escolhe o primeiro item do array
+        const isFirstDraw = items.every((i) => !i.sorted);
+        const winner = isFirstDraw ? items[0] : weightedPick(available, (it) => getWeight(it.rate));
 
         const list50 = [];
         for (let i = 0; i < totalVisualItems; i++) {
@@ -532,8 +575,8 @@
         resetWheelImmediate();
         renderWheel(list50);
 
-        const init = 7320;
-        const final = 7505;
+        const init = 7330;
+        const final = 7495;
         const targetPx = Math.random() < 0.5 ? init : final;
         const seconds = Math.floor(Math.random() * (18 - 14 + 1) + 14);
 
