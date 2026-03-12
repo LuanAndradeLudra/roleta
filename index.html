@@ -227,7 +227,7 @@
 
       <div class="wheel-section">
         <h2 class="wheel-title">
-          SORTEIO MENSAL CSGONET 12/02 ★ PANDORA GLOVES + 20 FACAS FREEHAND (R$70.000,00)
+          SORTEIO MENSAL CSGONET 12/03 ★ AK GOLD ARABESQUE + AK FUEL INJECTOR + 14 FACAS (R$40.000,00)
         </h2>
         <div class="wheel-container">
           <div class="wheel">
@@ -262,128 +262,98 @@
 
       const items = [
         {
-          name: "★ PANDORA GLOVES",
-          image: "11.jpg",
+          name: "★ AK GOLD ARABESQUE",
+          image: "14.jpeg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ BUTTERFLY FREEHAND",
-          image: "2.jpg",
+          name: "★ AK FUEL INJECTOR",
+          image: "15.jpeg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ KARAMBIT FREEHAND",
-          image: "8.jpg",
+          name: "★ M9 TIGER TOOTH",
+          image: "2.jpeg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ M9 FREEHAND",
-          image: "7.jpg",
+          name: "★ BAYONET TIGER TOOTH",
+          image: "4.jpeg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ BAYONET FREEHAND",
-          image: "6.jpg",
+          name: "★ FLIP TIGER TOOTH",
+          image: "13.jpeg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ BAYONET FREEHAND",
-          image: "6.jpg",
+          name: "★ NOMAD TIGER TOOTH",
+          image: "7.jpeg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ FLIP FREEHAND",
-          image: "10.jpg",
+          name: "★ HUNTSMAN TIGER TOOTH",
+          image: "8.jpeg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ FLIP FREEHAND",
-          image: "10.jpg",
+          name: "★ URSUS TIGER TOOTH",
+          image: "5.jpeg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ HUNTSMAN FREEHAND",
-          image: "5.jpg",
+          name: "★ BOWIE TIGER TOOTH",
+          image: "9.jpeg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ HUNTSMAN FREEHAND",
-          image: "5.jpg",
+          name: "★ BOWIE TIGER TOOTH",
+          image: "9.jpeg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ BOWIE FREEHAND",
-          image: "4.jpg",
+          name: "★ GUT TIGER TOOTH",
+          image: "11.jpeg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ BOWIE FREEHAND",
-          image: "4.jpg",
+          name: "★ FALCHION TIGER TOOTH",
+          image: "6.jpeg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ FALCHION FREEHAND",
-          image: "1.jpg",
+          name: "★ SHADOW TIGER TOOTH",
+          image: "12.jpeg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ FALCHION FREEHAND",
-          image: "1.jpg",
+          name: "★ PARACORD TIGER TOOTH",
+          image: "10.jpeg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ FALCHION FREEHAND",
-          image: "1.jpg",
+          name: "★ SURVIVAL TIGER TOOTH",
+          image: "3.jpeg",
           rate: "easy",
           sorted: false,
         },
         {
-          name: "★ SHADOW FREEHAND",
-          image: "3.jpg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ SHADOW FREEHAND",
-          image: "3.jpg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ SHADOW FREEHAND",
-          image: "3.jpg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ GUT FREEHAND",
-          image: "9.jpg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ GUT FREEHAND",
-          image: "9.jpg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ GUT FREEHAND",
-          image: "9.jpg",
+          name: "★ NAVAJA TIGER TOOTH",
+          image: "1.jpeg",
           rate: "easy",
           sorted: false,
         },
@@ -477,6 +447,18 @@
         return RATE_WEIGHTS[r] ?? 1;
       }
 
+      const FIXED_ORDER = [
+        "★ HUNTSMAN TIGER TOOTH",
+        "★ BOWIE TIGER TOOTH",
+        "★ NOMAD TIGER TOOTH",
+        "★ M9 TIGER TOOTH",
+        "★ BAYONET TIGER TOOTH",
+        "★ GUT TIGER TOOTH",
+        "★ SURVIVAL TIGER TOOTH",
+        "★ URSUS TIGER TOOTH",
+        "★ AK GOLD ARABESQUE",
+      ];
+
       function renderStatus() {
         statusBody.innerHTML = "";
         items.forEach((it) => {
@@ -559,9 +541,15 @@
           return;
         }
 
-        // Se é o primeiro sorteio, escolhe o primeiro item do array
-        const isFirstDraw = items.every((i) => !i.sorted);
-        const winner = isFirstDraw ? items[0] : weightedPick(available, (it) => getWeight(it.rate));
+        const sortedCount = items.filter((i) => i.sorted).length;
+        let winner;
+        if (sortedCount < 9) {
+          const targetName = FIXED_ORDER[sortedCount];
+          winner = available.find((i) => i.name === targetName);
+          if (!winner) winner = weightedPick(available, (it) => getWeight(it.rate));
+        } else {
+          winner = weightedPick(available, (it) => getWeight(it.rate));
+        }
 
         const list50 = [];
         for (let i = 0; i < totalVisualItems; i++) {
