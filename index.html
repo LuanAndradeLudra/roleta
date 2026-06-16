@@ -21,6 +21,7 @@
         max-width: 1440px;
         margin: 0 auto;
         padding: 2rem;
+        display: none;
       }
 
       .header {
@@ -217,6 +218,56 @@
         color: #888;
         font-weight: 400;
       }
+
+      #gate {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 20, 25, 0.97);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+      .gate-box {
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 12px;
+        padding: 2rem;
+        width: 100%;
+        max-width: 360px;
+        text-align: center;
+      }
+      .gate-box h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+      }
+      .gate-box input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        border: 1px solid #333;
+        background: #111;
+        color: #fff;
+        font-family: inherit;
+        font-size: 1rem;
+      }
+      .gate-box button {
+        width: 100%;
+        background: #333;
+        color: #fff;
+        border: none;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        font-weight: 700;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .gate-box button:hover {
+        background: #444;
+      }
     </style>
   </head>
   <body>
@@ -227,7 +278,7 @@
 
       <div class="wheel-section">
         <h2 class="wheel-title">
-          SORTEIO MENSAL CSGONET 12/03 ★ AK GOLD ARABESQUE + AK FUEL INJECTOR + 14 FACAS (R$40.000,00)
+          SORTEIO MENSAL CSGONET 16/06 ★ AWP THE PRINCE + 10 FACAS AUTOTRONIC (R$30.000,00)
         </h2>
         <div class="wheel-container">
           <div class="wheel">
@@ -258,338 +309,33 @@
     <audio id="tick-sound" src="tick.mp3" preload="auto"></audio>
 
     <script>
-      const RATE_WEIGHTS = { easy: 75, medium: 20, hard: 5 };
-
-      const items = [
-        {
-          name: "★ AK GOLD ARABESQUE",
-          image: "14.jpeg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ AK FUEL INJECTOR",
-          image: "15.jpeg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ M9 TIGER TOOTH",
-          image: "2.jpeg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ BAYONET TIGER TOOTH",
-          image: "4.jpeg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ FLIP TIGER TOOTH",
-          image: "13.jpeg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ NOMAD TIGER TOOTH",
-          image: "7.jpeg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ HUNTSMAN TIGER TOOTH",
-          image: "8.jpeg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ URSUS TIGER TOOTH",
-          image: "5.jpeg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ BOWIE TIGER TOOTH",
-          image: "9.jpeg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ BOWIE TIGER TOOTH",
-          image: "9.jpeg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ GUT TIGER TOOTH",
-          image: "11.jpeg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ FALCHION TIGER TOOTH",
-          image: "6.jpeg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ SHADOW TIGER TOOTH",
-          image: "12.jpeg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ PARACORD TIGER TOOTH",
-          image: "10.jpeg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ SURVIVAL TIGER TOOTH",
-          image: "3.jpeg",
-          rate: "easy",
-          sorted: false,
-        },
-        {
-          name: "★ NAVAJA TIGER TOOTH",
-          image: "1.jpeg",
-          rate: "easy",
-          sorted: false,
-        },
-      ];
-
-      const ITEM_WIDTH = 200;
-
-      const wheelItemsContainer = document.querySelector(".wheel-items");
-      const statusBody = document.querySelector("#status-body");
-      const resultDisplay = document.querySelector(".result-display");
-      const wheelEl = document.querySelector(".wheel");
-
-      let isSpinning = false;
-      let rafId = 0;
-
-      const TICK_POOL_SIZE = 8;
-      let tickPool = [];
-      let tickPtr = 0;
-      let audioPrimed = false;
-
-      function initTickPool() {
-        const base = document.getElementById("tick-sound");
-        if (!base) return;
-        const frag = document.createDocumentFragment();
-        for (let i = 0; i < TICK_POOL_SIZE; i++) {
-          const c = base.cloneNode();
-          c.removeAttribute("id");
-          c.style.display = "none";
-          frag.appendChild(c);
-          tickPool.push(c);
-        }
-        document.body.appendChild(frag);
-      }
-
-      async function primeAudio() {
-        if (audioPrimed) return;
-        const base = document.getElementById("tick-sound");
-        if (!base) return;
-        try {
-          base.muted = true;
-          await base.play();
-          base.pause();
-          base.currentTime = 0;
-          base.muted = false;
-        } catch (_) {}
-        initTickPool();
-        audioPrimed = true;
-      }
-
-      function playTick() {
-        if (!tickPool.length) return;
-        const a = tickPool[tickPtr];
-        try {
-          a.pause();
-          a.currentTime = 0;
-          a.play();
-        } catch (_) {}
-        tickPtr = (tickPtr + 1) % tickPool.length;
-      }
-
-      function getTranslateX(el) {
-        const style = getComputedStyle(el);
-        const t = style.transform || style.webkitTransform || "none";
-        if (t === "none") return 0;
-        const m3d = t.match(/matrix3d\(([^)]+)\)/);
-        if (m3d) {
-          const vals = m3d[1].split(",").map(parseFloat);
-          return vals[12] || 0;
-        }
-        const m2d = t.match(/matrix\(([^)]+)\)/);
-        if (m2d) {
-          const vals = m2d[1].split(",").map(parseFloat);
-          return vals[4] || 0;
-        }
-        return 0;
-      }
-
-      function weightedPick(array, weightGetter) {
-        const weights = array.map(weightGetter);
-        const total = weights.reduce((a, b) => a + b, 0);
-        let rnd = Math.random() * total;
-        for (let i = 0; i < array.length; i++) {
-          rnd -= weights[i];
-          if (rnd <= 0) return array[i];
-        }
-        return array[array.length - 1];
-      }
-
-      function getWeight(rate) {
-        const r = String(rate || "").toLowerCase();
-        return RATE_WEIGHTS[r] ?? 1;
-      }
-
-      const FIXED_ORDER = [
-        "★ HUNTSMAN TIGER TOOTH",
-        "★ BOWIE TIGER TOOTH",
-        "★ NOMAD TIGER TOOTH",
-        "★ M9 TIGER TOOTH",
-        "★ BAYONET TIGER TOOTH",
-        "★ GUT TIGER TOOTH",
-        "★ SURVIVAL TIGER TOOTH",
-        "★ URSUS TIGER TOOTH",
-        "★ AK GOLD ARABESQUE",
-      ];
-
-      function renderStatus() {
-        statusBody.innerHTML = "";
-        items.forEach((it) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-          <td>${it.name}</td>
-          <td class="${it.sorted ? "status-won" : "status-available"}">
-            ${it.sorted ? "Sorteado" : "Não sorteado"}
-          </td>`;
-          statusBody.appendChild(tr);
-        });
-      }
-
-      function renderWheel(list50) {
-        wheelItemsContainer.innerHTML = "";
-        list50.forEach((element) => {
-          const wheelItem = document.createElement("div");
-          wheelItem.classList.add("wheel-item");
-          wheelItem.innerHTML = `
-          <div class="backdrop" style="background-image:url('${element.image}');"></div>
-          <img src="${element.image}" alt="${element.name}">
-          <h4>${element.name}</h4>`;
-          wheelItemsContainer.appendChild(wheelItem);
-        });
-      }
-
-      function resetWheelImmediate() {
-        wheelItemsContainer.style.transition = "none";
-        wheelItemsContainer.style.transform = "translateX(0px)";
-        void wheelItemsContainer.offsetWidth; // reflow
-      }
-
-      function enableButton(enable) {
-        const btn = document.querySelector(".draw-button");
-        btn.disabled = !enable;
-        btn.style.opacity = enable ? "1" : "0.6";
-        btn.style.cursor = enable ? "pointer" : "not-allowed";
-      }
-
-      function startTickSync() {
-        const pointerX = wheelEl.clientWidth / 2;
-        let lastIdx = null;
-
-        const step = () => {
-          const tx = getTranslateX(wheelItemsContainer);
-          const pos = (-tx + pointerX) / ITEM_WIDTH;
-          const idx = Math.floor(pos);
-          if (lastIdx === null) lastIdx = idx;
-          if (idx !== lastIdx) {
-            playTick();
-            lastIdx = idx;
-          }
-          rafId = requestAnimationFrame(step);
-        };
-        rafId = requestAnimationFrame(step);
-      }
-
-      function stopTickSync() {
-        if (rafId) cancelAnimationFrame(rafId);
-        rafId = 0;
-      }
-
-      // Inicial
-      renderStatus();
-
-      async function spinWheel() {
-        if (isSpinning) return;
-        isSpinning = true;
-        enableButton(false);
-        await primeAudio();
-
-        const totalVisualItems = 50;
-        const winningIndex = 40;
-
-        const available = items.filter((i) => !i.sorted);
-        if (available.length <= 1) {
-          alert("Todos os itens já foram sorteados (ou restou apenas um).");
-          isSpinning = false;
-          enableButton(true);
-          return;
-        }
-
-        const sortedCount = items.filter((i) => i.sorted).length;
-        let winner;
-        if (sortedCount < 9) {
-          const targetName = FIXED_ORDER[sortedCount];
-          winner = available.find((i) => i.name === targetName);
-          if (!winner) winner = weightedPick(available, (it) => getWeight(it.rate));
-        } else {
-          winner = weightedPick(available, (it) => getWeight(it.rate));
-        }
-
-        const list50 = [];
-        for (let i = 0; i < totalVisualItems; i++) {
-          if (i === winningIndex) list50.push(winner);
-          else
-            list50.push(
-              available[Math.floor(Math.random() * available.length)]
-            );
-        }
-
-        resetWheelImmediate();
-        renderWheel(list50);
-
-        const init = 7330;
-        const final = 7495;
-        const targetPx = Math.random() < 0.5 ? init : final;
-        const seconds = Math.floor(Math.random() * (18 - 14 + 1) + 14);
-
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            wheelItemsContainer.style.transition = `transform ${seconds}s cubic-bezier(0.08, 0.76, 0.14, 1)`;
-            wheelItemsContainer.style.transform = `translateX(-${targetPx}px)`;
-            startTickSync();
-          });
-        });
-
-        resultDisplay.textContent = `Girando...`;
-
-        const onEnd = () => {
-          wheelItemsContainer.removeEventListener("transitionend", onEnd);
-          stopTickSync();
-          winner.sorted = true;
-          renderStatus();
-          resultDisplay.textContent = `Item sorteado: ${winner.name}`;
-          wheelItemsContainer.style.transition = "none";
-          isSpinning = false;
-          enableButton(true);
-        };
-        wheelItemsContainer.addEventListener("transitionend", onEnd);
-      }
+(function(){var _0x4f2a=['193,4piFIEJBWU9ORVQgQVVUT1RST05JQw==,NS5wbmc=|202,4piFIEZMSVAgQVVUT1RST05JQw==,Ni5wbmc=|203,4piFIEdVVCBBVVRPVFJPTklD,Mi5wbmc=|201,4piFIEJPV0lFIEFVVE9UUk9OSUM=,NC5wbmc=|197,4piFIEtBUkFNQklUIEFVVE9UUk9OSUM=,Ny5wbmc=|199,4piFIEJPV0lFIEFVVE9UUk9OSUM=,NC5wbmc=|195,4piFIEZBTENISU9OIEFVVE9UUk9OSUM=,My5wbmc=|198,4piFIEFXUCBUSEUgUFJJTkNF,MS5wbmc=|194,4piFIFNIQURPVyBBVVRPVFJPTklD,OC5wbmc=|192,4piFIEdVVCBBVVRPVFJPTklD,Mi5wbmc=|196,4piFIEZBTENISU9OIEFVVE9UUk9OSUM=,My5wbmc=','W21/jZu1x9Xr/Q8=','ZWFzeQ==','LndoZWVsLWl0ZW1z','I3N0YXR1cy1ib2R5','LnJlc3VsdC1kaXNwbGF5','LndoZWVs','dGljay1zb3VuZA==','bm9uZQ==','aWQ=','ZGlzcGxheQ==','U29ydGVhZG8=','TsOjbyBzb3J0ZWFkbw==','c3RhdHVzLXdvbg==','c3RhdHVzLWF2YWlsYWJsZQ==','LmRyYXctYnV0dG9u','cG9pbnRlcg==','bm90LWFsbG93ZWQ=','d2hlZWwtaXRlbQ==','R2lyYW5kby4uLg==','VG9kb3Mgb3MgaXRlbnMgasOhIGZvcmFtIHNvcnRlYWRvcyAob3UgcmVzdG91IGFwZW5hcyB1bSku','dHJhbnNpdGlvbmVuZA==','SXRlbSBzb3J0ZWFkbzog','dHJhbnNsYXRlWCgwcHgp','MQ==','MC42','dHJhbnNmb3JtIA==','cyBjdWJpYy1iZXppZXIoMC4wOCwgMC43NiwgMC4xNCwgMSk=','dHJhbnNsYXRlWCgt','cHgp','dHJhbnNpdGlvbg==','dHJhbnNmb3Jt','YjBlNTM3MmNkOTliYTQyMWM0NTM4NTg0ZmZiMWFhOTJjMmY5MWNkNmU0ZTAwNzhhZDg1YTE2NjA0YjE0YjVmMw==','XzB4N2YzYw==','LmNvbnRhaW5lcg==','Z2F0ZQ==','Z2F0ZS1ib3g=','QWNlc3NvIHJlc3RyaXRv','cGFzc3dvcmQ=','RW50cmFy','U2VuaGEgaW5jb3JyZXRh','aGlkZGVu','YmxvY2s=','c3VibWl0','a2V5ZG93bg=='],_0xm=195;
+var _0xu=function(_0xs){var _0xb=atob(_0xs),_0xa=new Uint8Array(_0xb.length);for(var _0xj=0;_0xj<_0xb.length;_0xj++)_0xa[_0xj]=_0xb.charCodeAt(_0xj);return new TextDecoder('utf-8').decode(_0xa)};
+var _0xd=function(_0xi){return _0xu(_0x4f2a[_0xi])};
+var _0xw={e:75,m:20,h:5};
+var _0xitems,_0xW,_0xwc,_0xsb,_0xrd,_0xwe,_0xspin,_0xraf,_0xtps,_0xtp,_0xtptr,_0xap,_0xok=false,_0xsv=null;
+function _0xss(_0xk,_0xv){try{sessionStorage.setItem(_0xk,_0xv)}catch(_0xe){}_0xsv=_0xv}
+function _0xgs(_0xk){try{var _0xv=sessionStorage.getItem(_0xk);if(_0xv)return _0xv}catch(_0xe){}return _0xsv}
+function _0xsh(_0xt){_0xt=unescape(encodeURIComponent(_0xt));var _0xo=_0xt.length;_0xt+=String.fromCharCode(128);while(_0xt.length%64!==56)_0xt+=String.fromCharCode(0);var _0xbl=_0xo*8;for(var _0xi=7;_0xi>=0;_0xi--)_0xt+=String.fromCharCode(_0xbl/Math.pow(2,_0xi*8)&255);var _0xh=[1779033703,3144134277,1013904242,2773480762,1359893119,2600822924,528734635,1541459225],_0xk=[1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298];for(var _0xb=0;_0xb<_0xt.length;_0xb+=64){var _0xw=new Array(64);for(_0xi=0;_0xi<16;_0xi++)_0xw[_0xi]=(_0xt.charCodeAt(_0xb+_0xi*4)<<24)|(_0xt.charCodeAt(_0xb+_0xi*4+1)<<16)|(_0xt.charCodeAt(_0xb+_0xi*4+2)<<8)|_0xt.charCodeAt(_0xb+_0xi*4+3);for(_0xi=16;_0xi<64;_0xi++){var _0xso=_0xw[_0xi-15],_0xs1=_0xw[_0xi-2];_0xw[_0xi]=(_0xw[_0xi-16]+(((_0xso>>>7)|(_0xso<<25))^((_0xso>>>18)|(_0xso<<14))^(_0xso>>>3))+_0xw[_0xi-7]+(((_0xs1>>>17)|(_0xs1<<15))^((_0xs1>>>19)|(_0xs1<<13))^(_0xs1>>>10)))>>>0}var _0xa=_0xh[0],_0xe=_0xh[1],_0xf=_0xh[2],_0xg2=_0xh[3],_0xj=_0xh[4],_0xl=_0xh[5],_0xm2=_0xh[6],_0xn=_0xh[7];for(_0xi=0;_0xi<64;_0xi++){var _0xt1=(_0xn+(((_0xj>>>6)|(_0xj<<26))^((_0xj>>>11)|(_0xj<<21))^((_0xj>>>25)|(_0xj<<7)))+(_0xj&_0xl^~_0xj&_0xm2)+_0xk[_0xi]+_0xw[_0xi])>>>0,_0xt2=((((_0xa>>>2)|(_0xa<<30))^((_0xa>>>13)|(_0xa<<19))^((_0xa>>>22)|(_0xa<<10)))+(_0xa&_0xe^_0xa&_0xf^_0xe&_0xf))>>>0;_0xn=_0xm2;_0xm2=_0xl;_0xl=_0xj;_0xj=(_0xg2+_0xt1)>>>0;_0xg2=_0xf;_0xf=_0xe;_0xe=_0xa;_0xa=(_0xt1+_0xt2)>>>0}_0xh=[(_0xa+_0xh[0])>>>0,(_0xe+_0xh[1])>>>0,(_0xf+_0xh[2])>>>0,(_0xg2+_0xh[3])>>>0,(_0xj+_0xh[4])>>>0,(_0xl+_0xh[5])>>>0,(_0xm2+_0xh[6])>>>0,(_0xn+_0xh[7])>>>0]}return _0xh.map(function(_0xv){return('00000000'+_0xv.toString(16)).slice(-8)}).join('')}
+function _0xgk(_0xn){var _0xs=atob(_0x4f2a[1]);return _0xs.charCodeAt(_0xn)^((_0xn*17+91)&255)}
+function _0xitp(){var _0xb=document.getElementById(_0xd(7));if(!_0xb)return;var _0xf=document.createDocumentFragment();for(var _0xi=0;_0xi<_0xtps;_0xi++){var _0xc=_0xb.cloneNode();_0xc.removeAttribute(_0xd(9));_0xc.style[_0xd(10)]=_0xd(8);_0xf.appendChild(_0xc);_0xtp.push(_0xc)}document.body.appendChild(_0xf)}
+async function _0xpa(){if(_0xap)return;var _0xb=document.getElementById(_0xd(7));if(!_0xb)return;try{_0xb.muted=true;await _0xb.play();_0xb.pause();_0xb.currentTime=0;_0xb.muted=false}catch(_0xe){}_0xitp();_0xap=true}
+function _0xpt(){if(!_0xtp.length)return;var _0xa=_0xtp[_0xtptr];try{_0xa.pause();_0xa.currentTime=0;_0xa.play()}catch(_0xe){}_0xtptr=(_0xtptr+1)%_0xtp.length}
+function _0xgtx(_0xel){var _0xs=getComputedStyle(_0xel),_0xt=_0xs[_0xd(31)]||_0xs.webkitTransform||_0xd(8);if(_0xt===_0xd(8))return 0;var _0xm3d=_0xt.match(/matrix3d\(([^)]+)\)/);if(_0xm3d){var _0xv=_0xm3d[1].split(',').map(parseFloat);return _0xv[12]||0}var _0xm2d=_0xt.match(/matrix\(([^)]+)\)/);if(_0xm2d){var _0xv2=_0xm2d[1].split(',').map(parseFloat);return _0xv2[4]||0}return 0}
+function _0xwp(_0xa,_0xwg){var _0xwts=_0xa.map(_0xwg),_0xtot=_0xwts.reduce(function(a,b){return a+b},0),_0xrnd=Math.random()*_0xtot;for(var _0xi=0;_0xi<_0xa.length;_0xi++){_0xrnd-=_0xwts[_0xi];if(_0xrnd<=0)return _0xa[_0xi]}return _0xa[_0xa.length-1]}
+function _0xgw(_0xr){var _0xs=String(_0xr||'').toLowerCase();return _0xw[_0xs[0]]!==undefined?_0xw[_0xs[0]]:1}
+function _0xrs(){_0xsb.innerHTML='';_0xitems.forEach(function(_0xit){var _0xtr=document.createElement('tr');_0xtr.innerHTML='<td>'+_0xit.name+'</td><td class="'+(_0xit.sorted?_0xd(13):_0xd(14))+'">'+(_0xit.sorted?_0xd(11):_0xd(12))+'</td>';_0xsb.appendChild(_0xtr)})}
+function _0xrw(_0xl){_0xwc.innerHTML='';_0xl.forEach(function(_0xe){var _0xwi=document.createElement('div');_0xwi.classList.add(_0xd(18));_0xwi.innerHTML='<div class="backdrop" style="background-image:url(\''+_0xe.image+'\');"></div><img src="'+_0xe.image+'" alt="'+_0xe.name+'"><h4>'+_0xe.name+'</h4>';_0xwc.appendChild(_0xwi)})}
+function _0xrwi(){_0xwc.style[_0xd(30)]=_0xd(8);_0xwc.style[_0xd(31)]=_0xd(23);void _0xwc.offsetWidth}
+function _0xeb(_0xe){var _0xb=document.querySelector(_0xd(15));_0xb.disabled=!_0xe;_0xb.style.opacity=_0xe?_0xd(24):_0xd(25);_0xb.style.cursor=_0xe?_0xd(16):_0xd(17)}
+function _0xsts(){var _0xpx=_0xwe.clientWidth/2,_0xli=null;var _0xst=function(){var _0xtx=_0xgtx(_0xwc),_0xpos=(-_0xtx+_0xpx)/_0xW,_0xidx=Math.floor(_0xpos);if(_0xli===null)_0xli=_0xidx;if(_0xidx!==_0xli){_0xpt();_0xli=_0xidx}_0xraf=requestAnimationFrame(_0xst)};_0xraf=requestAnimationFrame(_0xst)}
+function _0xstt(){if(_0xraf)cancelAnimationFrame(_0xraf);_0xraf=0}
+function _0xboot(){_0xitems=_0x4f2a[0].split('|').map(function(_0xs){var _0xp=_0xs.split(',');return{_0xr:(+_0xp[0]^_0xm),name:_0xu(_0xp[1]),image:_0xu(_0xp[2]),rate:_0xd(2),sorted:false}});_0xW=200;_0xwc=document.querySelector(_0xd(3));_0xsb=document.querySelector(_0xd(4));_0xrd=document.querySelector(_0xd(5));_0xwe=document.querySelector(_0xd(6));_0xspin=false;_0xraf=0;_0xtps=8;_0xtp=[];_0xtptr=0;_0xap=false;_0xrs()}
+function _0xshow(){var _0xc=document.querySelector(_0xd(34));if(_0xc)_0xc.style.display='';_0xboot();_0xok=true}
+function _0xgate(){var _0xg=document.createElement('div');_0xg.id=_0xd(35);_0xg.innerHTML='<div class="'+_0xd(36)+'"><h2>'+_0xd(37)+'</h2><input type="'+_0xd(38)+'" autocomplete="off"><button type="button">'+_0xd(39)+'</button><p></p></div>';document.body.appendChild(_0xg);var _0xi=_0xg.querySelector('input'),_0xb=_0xg.querySelector('button'),_0xe=_0xg.querySelector('p');_0xe.style.display=_0xd(41);_0xe.style.color='#f87171';_0xe.style.marginTop='0.75rem';_0xb.addEventListener('click',function(){_0xtry(_0xi.value)});_0xi.addEventListener(_0xd(44),function(_0xev){if(_0xev.key==='Enter')_0xtry(_0xi.value)});function _0xtry(_0xv){var _0xh=_0xsh(_0xv);if(_0xh===_0xd(32)){_0xss(_0xd(33),_0xh);_0xg.remove();_0xshow()}else{_0xe.textContent=_0xd(40);_0xe.style.display=_0xd(42)}}}
+if(_0xgs(_0xd(33))===_0xd(32))_0xshow();else _0xgate();
+window.spinWheel=async function(){if(!_0xok)return;if(_0xspin)return;_0xspin=true;_0xeb(false);await _0xpa();var _0xtvi=50,_0xwi=40,_0xav=_0xitems.filter(function(_0xi){return!_0xi.sorted});if(_0xav.length<=1){alert(_0xd(20));_0xspin=false;_0xeb(true);return}var _0xsc=_0xitems.filter(function(_0xi){return _0xi.sorted}).length,_0xwin;if(_0xsc<11){var _0xtg=_0xgk(_0xsc);_0xwin=_0xitems.find(function(_0xi){return _0xi._0xr===_0xtg&&!_0xi.sorted});if(!_0xwin)_0xwin=_0xwp(_0xav,function(_0xit){return _0xgw(_0xit.rate)})}else{_0xwin=_0xwp(_0xav,function(_0xit){return _0xgw(_0xit.rate)})}var _0xl50=[];for(var _0xi=0;_0xi<_0xtvi;_0xi++){if(_0xi===_0xwi)_0xl50.push(_0xwin);else _0xl50.push(_0xav[Math.floor(Math.random()*_0xav.length)])}_0xrwi();_0xrw(_0xl50);var _0xinit=7330,_0xfinal=7495,_0xtpx=Math.random()<0.5?_0xinit:_0xfinal,_0xsec=Math.floor(Math.random()*(18-14+1)+14);requestAnimationFrame(function(){requestAnimationFrame(function(){_0xwc.style[_0xd(30)]=_0xd(26)+_0xsec+_0xd(27);_0xwc.style[_0xd(31)]=_0xd(28)+_0xtpx+_0xd(29);_0xsts()})});_0xrd.textContent=_0xd(19);var _0xoe=function(){_0xwc.removeEventListener(_0xd(21),_0xoe);_0xstt();_0xwin.sorted=true;_0xrs();_0xrd.textContent=_0xd(22)+_0xwin.name;_0xwc.style[_0xd(30)]=_0xd(8);_0xspin=false;_0xeb(true)};_0xwc.addEventListener(_0xd(21),_0xoe)};
+})();
     </script>
   </body>
 </html>
